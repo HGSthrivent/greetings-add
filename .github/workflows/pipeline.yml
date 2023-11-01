@@ -9,9 +9,9 @@ name: Simple Pipe
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main","debug" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main","debug" ]
   workflow_dispatch:
     inputs:
       myVersion: 
@@ -23,6 +23,17 @@ permissions:
   contents: read
 
 jobs:
+  info: 
+    runs-on: ubuntu-latest
+    steps:
+     - name: Print warning message
+       run: |
+         echo "::warning::This version is for debugging only."
+     - name: Dump context for runner
+       env:
+         RUNNER_CONTEXT: ${{ toJSON(runner) }}
+       run: 
+         echo "::debug::Runner context is above."
   build:
     runs-on: ubuntu-latest
     # Map a step output to a job output
@@ -75,7 +86,7 @@ jobs:
        run: | 
          chmod +x ./test-script.sh
          ./test-script.sh ${{ needs.build.outputs.artifact-path }} ${{ github.event.inputs.myValues }}
-  
+
   count-args:
     runs-on: ubuntu-latest 
     steps: 
